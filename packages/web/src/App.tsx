@@ -20,7 +20,7 @@ export default function App() {
       </header>
 
       <main className="app-main">
-        <PDBUpload onUploadSuccess={handleUploadSuccess} />
+        <PDBUpload onUploadSuccess={handleUploadSuccess} structure={structure} />
         <MolstarViewer structure={structure} pdbFile={pdbFile} />
       </main>
     </div>

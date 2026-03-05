@@ -44,7 +44,7 @@ data/structures/       # Local PDB file storage (mounted as Docker volume)
 - API docs: http://localhost:8000/docs
 
 ## Current Phase
-MVP — Phase 1
+Phase 2 — Metadata panel, representation switching, colour schemes
 - PDB file upload via frontend
 - BioPython parses and returns metadata
 - Mol* renders the structure
@@ -63,7 +63,9 @@ MVP — Phase 1
 
 ## Plans & Decisions
 - docs/plans/ — phase plans and architectural decisions
-- Current active plan: docs/plans/phase-1-pdb-upload-molstar.md
+- Current active plan: docs/plans/phase-2-metadata-representations-colours.md
+- Completed: docs/plans/phase-1-pdb-upload-molstar.md
+
 
 ## Architecture Decisions
 - PDB bytes served via blob URL (Phase 1 only — browser session)

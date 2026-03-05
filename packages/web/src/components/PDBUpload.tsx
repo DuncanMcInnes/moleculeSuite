@@ -3,9 +3,10 @@ import type { StructureMetadata } from "../types";
 
 interface Props {
   onUploadSuccess: (metadata: StructureMetadata, file: File) => void;
+  structure: StructureMetadata | null;
 }
 
-export default function PDBUpload({ onUploadSuccess }: Props) {
+export default function PDBUpload({ onUploadSuccess, structure }: Props) {
   const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -86,6 +87,27 @@ export default function PDBUpload({ onUploadSuccess }: Props) {
       >
         {loading ? "Parsing…" : "Upload & Parse"}
       </button>
+
+      {structure && (
+        <div className="metadata-card">
+          <div className="stat">
+            <span className="stat__label">Filename</span>
+            <span className="stat__value">{structure.name}</span>
+          </div>
+          <div className="stat">
+            <span className="stat__label">Chains</span>
+            <span className="stat__value">{structure.chains.join(", ")}</span>
+          </div>
+          <div className="stat">
+            <span className="stat__label">Residues</span>
+            <span className="stat__value">{structure.residue_count}</span>
+          </div>
+          <div className="stat">
+            <span className="stat__label">Atoms</span>
+            <span className="stat__value">{structure.atom_count}</span>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

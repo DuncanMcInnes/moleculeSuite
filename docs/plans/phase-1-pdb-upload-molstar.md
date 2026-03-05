@@ -119,3 +119,29 @@ Add `position: relative` to `.viewer-canvas` so Mol*'s absolutely-positioned can
 5. Mol* canvas should render the 3D structure with default ball-and-stick/ribbon representation
 6. Upload a second file — old structure clears, new one renders
 7. Check browser console for no uncaught errors (blob URL cleanup, WebGL warnings are fine)
+
+---
+
+## Outcome
+
+**Status:** Complete  
+**Completed:** 2026-03-05
+
+### What was built
+- PDB upload via drag-and-drop or file browser
+- BioPython parses structure, returns name/chains/residue count/atom count
+- Mol* renders cartoon representation on dark background
+- Tested with 1CRN (crambin) — helices, sheets and loops rendering correctly
+
+### Deviations from plan
+- Molstar required Node 22 (not Node 20) — bumped web Dockerfile
+- sass-embedded required as explicit dev dependency for Molstar SCSS
+- VITE_API_BASE_URL must use Docker service name (http://api:8000) 
+  not localhost — container-to-container routing
+- Molstar createRoot + Symbol warnings are internal to Molstar, 
+  not fixable from our code
+
+### Lessons learned
+- Commit before every major change
+- Docker env vars using localhost fail inside containers
+- Molstar imports require explicit /index deep paths, not top-level package
