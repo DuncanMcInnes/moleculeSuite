@@ -5,6 +5,12 @@ import type { StructureMetadata } from "./types";
 
 export default function App() {
   const [structure, setStructure] = useState<StructureMetadata | null>(null);
+  const [pdbFile, setPdbFile] = useState<File | null>(null);
+
+  function handleUploadSuccess(metadata: StructureMetadata, file: File) {
+    setStructure(metadata);
+    setPdbFile(file);
+  }
 
   return (
     <div className="app">
@@ -14,8 +20,8 @@ export default function App() {
       </header>
 
       <main className="app-main">
-        <PDBUpload onUploadSuccess={setStructure} />
-        <MolstarViewer structure={structure} />
+        <PDBUpload onUploadSuccess={handleUploadSuccess} />
+        <MolstarViewer structure={structure} pdbFile={pdbFile} />
       </main>
     </div>
   );

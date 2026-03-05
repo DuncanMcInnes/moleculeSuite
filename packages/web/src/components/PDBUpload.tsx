@@ -2,7 +2,7 @@ import { useRef, useState, DragEvent } from "react";
 import type { StructureMetadata } from "../types";
 
 interface Props {
-  onUploadSuccess: (metadata: StructureMetadata) => void;
+  onUploadSuccess: (metadata: StructureMetadata, file: File) => void;
 }
 
 export default function PDBUpload({ onUploadSuccess }: Props) {
@@ -40,7 +40,7 @@ export default function PDBUpload({ onUploadSuccess }: Props) {
       const res = await fetch("/api/structures/upload", { method: "POST", body: form });
       const data = await res.json();
       if (!res.ok) throw new Error(data.detail ?? "Upload failed");
-      onUploadSuccess(data as StructureMetadata);
+      onUploadSuccess(data as StructureMetadata, file);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Upload failed");
     } finally {
