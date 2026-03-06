@@ -44,7 +44,8 @@ data/structures/       # Local PDB file storage (mounted as Docker volume)
 - API docs: http://localhost:8000/docs
 
 ## Current Phase
-Phase 2 — Metadata panel, representation switching, colour schemes
+
+Phase 2 complete. Phase 3 not yet planned.
 - PDB file upload via frontend
 - BioPython parses and returns metadata
 - Mol* renders the structure
@@ -65,6 +66,7 @@ Phase 2 — Metadata panel, representation switching, colour schemes
 - docs/plans/ — phase plans and architectural decisions
 - Current active plan: docs/plans/phase-2-metadata-representations-colours.md
 - Completed: docs/plans/phase-1-pdb-upload-molstar.md
+- Completed: docs/plans/phase-2-metadata-representations-colours.md
 
 
 ## Architecture Decisions
@@ -72,6 +74,13 @@ Phase 2 — Metadata panel, representation switching, colour schemes
 - Phase 2 will add server-side PDB persistence via data/structures volume
 - Mol* PluginContext uses two-effect pattern: init on mount, reload on file change
 - Backend is complete for Phase 1 — no new endpoints needed
+- Mol* native UI hidden via regionState in createPluginUI spec
+- chains type is { id, sequence }[] not string[] — carries 
+  sequence data from backend through to frontend
+- Mol* repr strings: gaussian-surface (not surface), 
+  uncertainty (not b-factor)
+- applyPreset avoided — manual build chain used for 
+  full control over repr and colour
 
 ## Known Issues / Watch Points
 - Molstar emits createRoot + Symbol warnings in dev/StrictMode — 

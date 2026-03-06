@@ -190,3 +190,38 @@ No backend changes. No new npm packages. No new files.
 7. Click **By B-factor** → colour gradient from blue (low) to red (high)
 8. Upload a second file → controls reset to Cartoon / By Chain; new structure loads
 9. Browser console: no uncaught errors
+
+---
+
+## Outcome
+
+**Status:** Complete  
+**Completed:** 2026-03-05
+
+### What was built
+1. Metadata panel — filename, chains, residue count, atom count 
+   displayed in dark card below upload button
+2. Representation switching — Cartoon, Ball & Stick, Surface 
+   (gaussian-surface) with active button highlighting
+3. Colour schemes — By Chain, By Element, By B-factor 
+   (uncertainty) with active button highlighting
+4. Sequence card — per-chain single-letter amino acid sequence, 
+   wrapped at 10 residues per line with position numbers
+5. Mol* native UI hidden — regionState all set to hidden, 
+   clean viewer with only our custom controls visible
+
+### Deviations from plan
+- Mol* built-in controls panel conflicted with custom buttons
+  — fixed by setting regionState hidden in createPluginUI spec
+- Sequence card required backend change — BioPython sequence 
+  extraction added to pdb_service.py and response model updated
+- chains type changed from string[] to { id, sequence }[] 
+  to carry sequence data through to frontend
+
+### Lessons learned
+- Mol* representation strings are non-obvious: gaussian-surface 
+  not surface, uncertainty not b-factor
+- applyPreset bundles repr + colour internally — manual build 
+  chain required for any custom control
+- Backend changes require docker compose up --build
+- Always hide Mol* native UI early — easier than working around it
