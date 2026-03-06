@@ -6,15 +6,21 @@ uploaded PDB file without writing anything to disk.
 """
 
 import io
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
-from Bio.PDB import PDBParser
+from Bio.PDB import PDBParser, PPBuilder
+
+
+@dataclass
+class ChainInfo:
+    id: str
+    sequence: str
 
 
 @dataclass
 class PDBMetadata:
     name: str
-    chains: list[str]
+    chains: list[ChainInfo]
     residue_count: int
     atom_count: int
 
@@ -28,17 +34,28 @@ def parse_pdb(filename: str, content: bytes) -> PDBMetadata:
         content:  Raw bytes of the uploaded .pdb file.
 
     Returns:
-        PDBMetadata with name, chain IDs, residue count, and atom count.
+        PDBMetadata with name, chain infos (id + sequence), residue count,
+        and atom count.
     """
     structure_id = filename.removesuffix(".pdb")
 
     parser = PDBParser(QUIET=True)
-    # BioPython expects a file-like object; wrap the decoded content in StringIO
-    # so we never touch the filesystem.
     handle = io.StringIO(content.decode("utf-8", errors="replace"))
     structure = parser.get_structure(structure_id, handle)
 
-    chains = sorted({chain.id for chain in structure.get_chains()})
+    # Build per-chain sequences using BioPython's polypeptide builder.
+    # PPBuilder concatenates peptide fragments within a chain into one sequence.
+    builder = PPBuilder()
+    sequence_by_chain: dict[str, str] = {}
+    for chain in structure.get_chains():
+        peptides = builder.build_peptides(chain)
+        seq = "".join(str(pp.get_sequence()) for pp in peptides)
+        sequence_by_chain[chain.id] = seq
+
+    chains = [
+        ChainInfo(id=cid, sequence=sequence_by_chain.get(cid, ""))
+        for cid in sorted(sequence_by_chain)
+    ]
 
     # id[0] == ' ' distinguishes standard amino-acid / nucleotide residues
     # from HETATM records (water, ligands) and insertion codes.

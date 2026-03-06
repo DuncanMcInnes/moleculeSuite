@@ -1,5 +1,6 @@
 import { useRef, useState, DragEvent } from "react";
 import type { StructureMetadata } from "../types";
+import SequenceCard from "./SequenceCard";
 
 interface Props {
   onUploadSuccess: (metadata: StructureMetadata, file: File) => void;
@@ -96,7 +97,7 @@ export default function PDBUpload({ onUploadSuccess, structure }: Props) {
           </div>
           <div className="stat">
             <span className="stat__label">Chains</span>
-            <span className="stat__value">{structure.chains.join(", ")}</span>
+            <span className="stat__value">{structure.chains.map(c => c.id).join(", ")}</span>
           </div>
           <div className="stat">
             <span className="stat__label">Residues</span>
@@ -108,6 +109,8 @@ export default function PDBUpload({ onUploadSuccess, structure }: Props) {
           </div>
         </div>
       )}
+
+      {structure && <SequenceCard chains={structure.chains} />}
     </div>
   );
 }

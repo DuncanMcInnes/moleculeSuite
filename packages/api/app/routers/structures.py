@@ -6,9 +6,14 @@ from app.services.pdb_service import PDBMetadata, parse_pdb
 router = APIRouter(prefix="/structures", tags=["structures"])
 
 
+class ChainInfoResponse(BaseModel):
+    id: str
+    sequence: str
+
+
 class StructureMetadataResponse(BaseModel):
     name: str
-    chains: list[str]
+    chains: list[ChainInfoResponse]
     residue_count: int
     atom_count: int
 
@@ -19,7 +24,7 @@ async def upload_structure(file: UploadFile = File(...)) -> StructureMetadataRes
     Accept a .pdb file upload and return basic structural metadata.
 
     - **name**: structure identifier (filename without extension)
-    - **chains**: sorted list of chain IDs present in the file
+    - **chains**: sorted list of chains, each with id and single-letter sequence
     - **residue_count**: number of standard residues (excludes HETATM)
     - **atom_count**: total atom count including heteroatoms
     """
@@ -35,7 +40,7 @@ async def upload_structure(file: UploadFile = File(...)) -> StructureMetadataRes
 
     return StructureMetadataResponse(
         name=metadata.name,
-        chains=metadata.chains,
+        chains=[ChainInfoResponse(id=c.id, sequence=c.sequence) for c in metadata.chains],
         residue_count=metadata.residue_count,
         atom_count=metadata.atom_count,
     )
