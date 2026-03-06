@@ -9,7 +9,7 @@ import type { StructureMetadata } from "../types";
 import "molstar/build/viewer/molstar.css";
 
 type ReprType = "cartoon" | "ball-and-stick" | "gaussian-surface";
-type ColorTheme = "chain-id" | "element-symbol" | "uncertainty";
+type ColorTheme = "chain-id" | "element-symbol" | "uncertainty" | "sequence-id";
 
 interface Props {
   structure: StructureMetadata | null;
@@ -26,6 +26,7 @@ const COLOR_OPTIONS: { value: ColorTheme; label: string }[] = [
   { value: "chain-id",       label: "By Chain" },
   { value: "element-symbol", label: "By Element" },
   { value: "uncertainty",    label: "By B-factor" },
+  { value: "sequence-id",    label: "Rainbow" },
 ];
 
 export default function MolstarViewer({ pdbFile }: Props) {
