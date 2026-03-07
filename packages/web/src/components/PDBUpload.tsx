@@ -1,6 +1,5 @@
 import { useRef, useState, DragEvent } from "react";
 import type { StructureMetadata } from "../types";
-import SequenceCard from "./SequenceCard";
 
 interface Props {
   onUploadSuccess: (metadata: StructureMetadata, file: File) => void;
@@ -110,7 +109,6 @@ export default function PDBUpload({ onUploadSuccess, structure }: Props) {
         </div>
       )}
 
-      {structure && <SequenceCard chains={structure.chains} />}
     </div>
   );
 }

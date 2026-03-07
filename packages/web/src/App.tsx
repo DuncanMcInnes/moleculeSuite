@@ -1,6 +1,7 @@
 import { useState } from "react";
 import MolstarViewer from "./components/MolstarViewer";
 import PDBUpload from "./components/PDBUpload";
+import SequenceCard from "./components/SequenceCard";
 import type { StructureMetadata } from "./types";
 
 type SelectedResidue = { chainId: string; seqId: number };
@@ -33,7 +34,14 @@ export default function App() {
 
       <main className="app-main">
         <PDBUpload onUploadSuccess={handleUploadSuccess} structure={structure} />
-        <MolstarViewer structure={structure} pdbFile={pdbFile} />
+        {structure && (
+          <SequenceCard
+            chains={structure.chains}
+            selectedResidue={selectedResidue}
+            onResidueClick={handleResidueClick}
+          />
+        )}
+        <MolstarViewer structure={structure} pdbFile={pdbFile} selectedResidue={selectedResidue} />
       </main>
     </div>
   );
