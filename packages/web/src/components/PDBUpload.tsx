@@ -35,7 +35,32 @@ export default function PDBUpload({ onUploadSuccess, structure }: Props) {
   }
 
   async function handleFetch() {
-    // logic added in Step 2
+    const code = accession.trim().toUpperCase();
+    if (!/^[A-Za-z0-9]{4}$/.test(code)) {
+      setError('Accession code must be 4 letters/numbers (e.g. 1HHO)');
+      return;
+    }
+    setFetchLoading(true);
+    setError(null);
+    try {
+      const rcsbRes = await fetch(`https://files.rcsb.org/download/${code}.pdb`);
+      if (rcsbRes.status === 404) throw new Error('Structure not found in RCSB (check the accession code)');
+      if (!rcsbRes.ok) throw new Error(`RCSB returned ${rcsbRes.status}`);
+      const bytes = await rcsbRes.arrayBuffer();
+      const pdbFile = new File([bytes], `${code}.pdb`, { type: 'chemical/x-pdb' });
+
+      const form = new FormData();
+      form.append('file', pdbFile);
+      const uploadRes = await fetch('/api/structures/upload', { method: 'POST', body: form });
+      const data = await uploadRes.json();
+      if (!uploadRes.ok) throw new Error(data.detail ?? 'Parse failed');
+      onUploadSuccess(data as StructureMetadata, pdbFile);
+      setAccession('');
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Fetch failed');
+    } finally {
+      setFetchLoading(false);
+    }
   }
 
   function handleDrop(e: DragEvent<HTMLDivElement>) {
