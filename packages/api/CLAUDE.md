@@ -44,6 +44,7 @@ data/structures/       # Local PDB file storage (mounted as Docker volume)
 - API docs: http://localhost:8000/docs
 
 ## Current Phase
+- Phase 5 complete. Phase 6 not yet planned.
 - Phase 5 — RCSB fetch by accession code
 - Phase 4 — HETATM controls: hide/show waters, highlight ligands
 - Phase 3 complete.
@@ -66,7 +67,7 @@ data/structures/       # Local PDB file storage (mounted as Docker volume)
 
 ## Plans & Decisions
 - docs/plans/ — phase plans and architectural decisions
-- Current active plan: docs/plans/phase-5-rcsb-fetch.md
+- Completed: docs/plans/phase-5-rcsb-fetch.md
 - Completed: docs/plans/phase-4-hetatm-controls.md
 - Completed: docs/plans/phase-1-pdb-upload-molstar.md
 - Completed: docs/plans/phase-2-metadata-representations-colours.md

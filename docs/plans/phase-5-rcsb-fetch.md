@@ -274,3 +274,29 @@ async function handleFetch() {
 7. **Large structures** — some PDB files are 10–50 MB (e.g. ribosomes). The
    fetch may take several seconds. The "Fetching…" label covers this; no
    progress indicator needed for now.
+
+---
+
+## Outcome
+
+**Status:** Complete  
+**Completed:** 2026-03-07
+
+### What was built
+- Accession input with Fetch button below upload panel
+- RCSB fetch via browser fetch() — CORS confirmed working
+- Synthetic File pattern reuses entire existing pipeline
+- Validation, 404 handling, network error handling
+- Mutual-clear: selecting file clears accession, typing 
+  accession clears file
+- Styled to match existing dark panel UI
+
+### Deviations from plan
+- None — implemented exactly as planned
+- CORS worked first time, no backend proxy needed
+
+### Lessons learned
+- RCSB serves Access-Control-Allow-Origin: * — direct 
+  browser fetch works cleanly
+- Synthetic File wrapping ArrayBuffer reuses pipeline 
+  with zero backend changes
