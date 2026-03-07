@@ -205,8 +205,12 @@ export default function MolstarViewer({ pdbFile, selectedResidue }: Props) {
     if (!plugin) return;
     const structures = plugin.managers.structure.hierarchy.current.structures;
     if (!structures.length) return;
+    const polymerComps = structures[0].components.filter(
+      c => Array.isArray(c.cell.transform.tags) &&
+           c.cell.transform.tags.includes("structure-component-static-polymer")
+    );
     await plugin.managers.structure.component.updateRepresentationsTheme(
-      structures[0].components,
+      polymerComps,
       { color }
     );
   }

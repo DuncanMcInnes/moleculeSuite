@@ -180,15 +180,16 @@ Currently `handleColorChange` applies the colour update to ALL components via
 `structures[0].components`. After Phase 4, this would recolour water/ligand,
 breaking their fixed styles.
 
-Fix: filter to only the polymer component. The tag for the polymer component is
-`static-polymer` (set by `tryCreateComponentStatic` as `static-${type}`).
-Source: `builder/structure.js` line 122. Tags are on `c.cell.transform.tags`
-(a `Set<string>`). Source: `hierarchy-state.js` line 46.
+Fix: filter to only the polymer component. The actual tag stored on
+`cell.transform.tags` is `"structure-component-static-polymer"` — `tryCreateComponent`
+prepends `"structure-component-"` to the key before storing it as a tag.
+Source: `builder/structure.js` line 98: `const keyTag = \`structure-component-${key}\``.
+Tags are on `c.cell.transform.tags` (a `Set<string>`).
 
 ```ts
 const structs = plugin.managers.structure.hierarchy.current.structures;
 const polymerComps = (structs[0]?.components ?? []).filter(
-  c => c.cell.transform.tags?.has('static-polymer')
+  c => c.cell.transform.tags?.has('structure-component-static-polymer')
 );
 await plugin.managers.structure.component.updateRepresentationsTheme(polymerComps, { color });
 ```
