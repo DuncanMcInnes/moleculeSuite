@@ -56,11 +56,14 @@ export default function MolstarViewer({ pdbFile, selectedResidue }: Props) {
 
   const [reprType,   setReprType]   = useState<ReprType>("cartoon");
   const [colorTheme, setColorTheme] = useState<ColorTheme>("chain-id");
+  const [showWater,  setShowWater]  = useState(true);
+  const [hasWater,   setHasWater]   = useState(false);
 
   // Refs so loadStructure always reads the current values without stale closures
   const reprRef  = useRef(reprType);
   const colorRef = useRef(colorTheme);
   const selectedResidueRef = useRef(selectedResidue);
+  const showWaterRef = useRef(true);
   const waterRefStr  = useRef<string | null>(null);
   const ligandRefStr = useRef<string | null>(null);
 
@@ -117,6 +120,9 @@ export default function MolstarViewer({ pdbFile, selectedResidue }: Props) {
     colorRef.current = "chain-id";
     setReprType("cartoon");
     setColorTheme("chain-id");
+    showWaterRef.current = true;
+    setShowWater(true);
+    setHasWater(false);
 
     if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current);
     const url = URL.createObjectURL(pdbFile);
@@ -167,6 +173,7 @@ export default function MolstarViewer({ pdbFile, selectedResidue }: Props) {
       });
     }
     waterRefStr.current = waterComp?.ref ?? null;
+    setHasWater(!!waterComp);
 
     const ligandComp = await plugin.builders.structure.tryCreateComponentStatic(structure, "ligand");
     if (ligandComp) {
@@ -189,6 +196,19 @@ export default function MolstarViewer({ pdbFile, selectedResidue }: Props) {
     // Re-apply selection after repr rebuild so marker persists across repr changes
     const sel = selectedResidueRef.current;
     if (sel) applyResidueSelection(plugin, sel);
+    // Re-apply water visibility if user toggled it off before a repr rebuild
+    if (!showWaterRef.current && waterRefStr.current) {
+      setSubtreeVisibility(plugin.state.data, waterRefStr.current, true);
+    }
+  }
+
+  function handleWaterToggle() {
+    const plugin = pluginRef.current;
+    if (!plugin || !waterRefStr.current) return;
+    const next = !showWater;
+    setShowWater(next);
+    showWaterRef.current = next;
+    setSubtreeVisibility(plugin.state.data, waterRefStr.current, !next);
   }
 
   async function handleReprChange(repr: ReprType) {
@@ -241,6 +261,16 @@ export default function MolstarViewer({ pdbFile, selectedResidue }: Props) {
               </button>
             ))}
           </div>
+          {hasWater && (
+            <div className="repr-controls">
+              <button
+                className={`repr-btn${!showWater ? " repr-btn--active" : ""}`}
+                onClick={handleWaterToggle}
+              >
+                {showWater ? "Hide Waters" : "Show Waters"}
+              </button>
+            </div>
+          )}
         </>
       )}
 
