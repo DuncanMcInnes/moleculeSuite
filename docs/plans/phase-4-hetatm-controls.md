@@ -384,5 +384,22 @@ No new npm packages needed.
 
 ## Outcome
 
-**Status:** Planning
-**Planned:** 2026-03-07
+**Status:** Complete  
+**Completed:** 2026-03-07
+
+### What was built
+- loadStructure split into polymer/water/ligand/ion components
+- Ligand (haem, small molecules) rendered in amber ball-and-stick
+- Water toggle button — only shown when structure has water
+- Colour changes correctly filter to polymer only
+
+### Deviations from plan
+- Mol* component tags are Arrays not Sets — Array.includes() 
+  required not Set.has()
+- Full tag string is 'structure-component-static-polymer' 
+  not 'static-polymer'
+
+### Lessons learned
+- Always verify Mol* tag types from node_modules before using
+- console.log debugging inside handlers is the fastest way 
+  to surface type mismatches
