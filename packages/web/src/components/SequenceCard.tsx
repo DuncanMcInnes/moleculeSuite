@@ -1,12 +1,16 @@
 import type { ChainInfo } from "../types";
 
+interface SelectedResidue { chainId: string; seqId: number }
+
 interface Props {
   chains: ChainInfo[];
+  selectedResidue: SelectedResidue | null;
+  onResidueClick: (chainId: string, seqId: number) => void;
 }
 
 const LINE_WIDTH = 10;
 
-export default function SequenceCard({ chains }: Props) {
+export default function SequenceCard({ chains, selectedResidue, onResidueClick }: Props) {
   return (
     <div className="sequence-card">
       <p className="panel-title">Sequence</p>
@@ -25,7 +29,23 @@ export default function SequenceCard({ chains }: Props) {
               {lines.map(({ pos, residues }) => (
                 <div key={pos} className="sequence-line">
                   <span className="sequence-pos">{pos}</span>
-                  <span className="sequence-residues">{residues}</span>
+                  <span className="sequence-residues">
+                    {residues.split('').map((aa, idx) => {
+                      const absIdx = pos - 1 + idx;
+                      const seqId  = chain.seq_ids[absIdx];
+                      const isSelected =
+                        selectedResidue?.chainId === chain.id && selectedResidue?.seqId === seqId;
+                      return (
+                        <span
+                          key={absIdx}
+                          className={`sequence-aa${isSelected ? ' sequence-aa--selected' : ''}`}
+                          onClick={() => onResidueClick(chain.id, seqId)}
+                        >
+                          {aa}
+                        </span>
+                      );
+                    })}
+                  </span>
                 </div>
               ))}
             </div>
