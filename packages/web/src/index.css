@@ -182,6 +182,48 @@ body {
   padding: 0.5rem 0.75rem;
 }
 
+/* ── Accession fetch ─────────────────────────────────────────────────── */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+}
+
+.divider::before,
+.divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.accession-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.accession-input {
+  flex: 1;
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.55rem 0.65rem;
+  font-size: 0.85rem;
+  font-family: var(--font);
+  outline: none;
+  transition: border-color 0.15s;
+  min-width: 0;
+}
+
+.accession-input::placeholder { color: var(--text-muted); }
+
+.accession-input:focus { border-color: var(--accent); }
+
+.accession-btn { width: auto; }
+
 /* ── Sequence card ───────────────────────────────────────────────────── */
 .sequence-card {
   background: var(--surface-2);
