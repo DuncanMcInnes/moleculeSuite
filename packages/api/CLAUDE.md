@@ -45,7 +45,8 @@ data/structures/       # Local PDB file storage (mounted as Docker volume)
 
 ## Current Phase
 
-Phase 2 complete. Phase 3 not yet planned.
+- Phase 3 complete. Phase 4 not yet planned.
+- Phase 2 complete. 
 - PDB file upload via frontend
 - BioPython parses and returns metadata
 - Mol* renders the structure
@@ -64,9 +65,9 @@ Phase 2 complete. Phase 3 not yet planned.
 
 ## Plans & Decisions
 - docs/plans/ — phase plans and architectural decisions
-- Current active plan: docs/plans/phase-2-metadata-representations-colours.md
 - Completed: docs/plans/phase-1-pdb-upload-molstar.md
 - Completed: docs/plans/phase-2-metadata-representations-colours.md
+- Completed: docs/plans/phase-3-residue-selection.md
 
 
 ## Architecture Decisions
@@ -81,7 +82,11 @@ Phase 2 complete. Phase 3 not yet planned.
   uncertainty (not b-factor)
 - applyPreset avoided — manual build chain used for 
   full control over repr and colour
-
+- SequenceCard lives in App.tsx not PDBUpload — 
+  display component, not part of upload widget
+- auth_seq_id/auth_asym_id always used for Mol* queries — 
+  never label_ variants
+  
 ## Known Issues / Watch Points
 - Molstar emits createRoot + Symbol warnings in dev/StrictMode — 
   entire stack is Molstar internals (renderReact18 → createRoot).

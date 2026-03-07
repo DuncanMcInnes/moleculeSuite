@@ -1,3 +1,4 @@
+
 # Phase 3 Plan: Residue Selection — Sequence Card → 3D Highlight + Camera Focus
 
 ## Context
@@ -345,4 +346,28 @@ This is an implementation detail to handle during coding — either approach is 
 
 ## Outcome
 
-**Status:** Pending approval
+**Status:** Complete  
+**Completed:** 2026-03-07
+
+### What was built
+- Click residue in sequence card → highlights in 3D viewer + camera zooms
+- Click same residue → deselects
+- Click different residue → switches selection
+- Selection persists across representation changes
+- Resets on new file upload
+- Tested with 1CRN (single chain) and 1HHO (4 chains)
+
+### Deviations from plan
+- SequenceCard moved from PDBUpload.tsx to App.tsx — 
+  cleaner architecture, props flow directly
+- Step-by-step build required after full implementation 
+  caused black viewer on first attempt
+
+### Lessons learned
+- auth_seq_id not label_seq_id — label_seq_id silently 
+  returns 0 for PDB without SEQRES records
+- auth_asym_id not label_asym_id — Mol* can rename chains
+- Always build complex features step by step with commits 
+  between each file change
+- Revert immediately when something breaks — don't debug 
+  a broken state
