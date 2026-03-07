@@ -44,8 +44,8 @@ data/structures/       # Local PDB file storage (mounted as Docker volume)
 - API docs: http://localhost:8000/docs
 
 ## Current Phase
-
-- Phase 3 complete. Phase 4 not yet planned.
+- Phase 4 — HETATM controls: hide/show waters, highlight ligands
+- Phase 3 complete.
 - Phase 2 complete. 
 - PDB file upload via frontend
 - BioPython parses and returns metadata
@@ -86,7 +86,7 @@ data/structures/       # Local PDB file storage (mounted as Docker volume)
   display component, not part of upload widget
 - auth_seq_id/auth_asym_id always used for Mol* queries — 
   never label_ variants
-  
+
 ## Known Issues / Watch Points
 - Molstar emits createRoot + Symbol warnings in dev/StrictMode — 
   entire stack is Molstar internals (renderReact18 → createRoot).

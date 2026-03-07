@@ -4,6 +4,7 @@ import { renderReact18 } from "molstar/lib/mol-plugin-ui/react18";
 import { DefaultPluginUISpec } from "molstar/lib/mol-plugin-ui/spec";
 import type { PluginContext } from "molstar/lib/mol-plugin/context";
 import { Color } from "molstar/lib/mol-util/color/index";
+import { setSubtreeVisibility } from "molstar/lib/mol-plugin/behavior/static/state";
 import { Script } from "molstar/lib/mol-script/script";
 import { StructureSelection, StructureElement } from "molstar/lib/mol-model/structure";
 import type { StructureMetadata } from "../types";
@@ -60,6 +61,8 @@ export default function MolstarViewer({ pdbFile, selectedResidue }: Props) {
   const reprRef  = useRef(reprType);
   const colorRef = useRef(colorTheme);
   const selectedResidueRef = useRef(selectedResidue);
+  const waterRefStr  = useRef<string | null>(null);
+  const ligandRefStr = useRef<string | null>(null);
 
   // Effect 1: init plugin once on mount, dispose on unmount.
   useEffect(() => {
@@ -139,16 +142,50 @@ export default function MolstarViewer({ pdbFile, selectedResidue }: Props) {
     if (!plugin) return;
 
     await plugin.clear();
+    waterRefStr.current  = null;
+    ligandRefStr.current = null;
+
     const data      = await plugin.builders.data.download({ url, isBinary: false });
     const traj      = await plugin.builders.structure.parseTrajectory(data, "pdb");
     const model     = await plugin.builders.structure.createModel(traj);
     const structure = await plugin.builders.structure.createStructure(model);
-    const component = await plugin.builders.structure.tryCreateComponentStatic(structure, "all");
-    if (!component) return;
-    await plugin.builders.structure.representation.addRepresentation(component, {
-      type:  repr,
-      color: color,
-    });
+
+    const polymerComp = await plugin.builders.structure.tryCreateComponentStatic(structure, "polymer");
+    if (polymerComp) {
+      await plugin.builders.structure.representation.addRepresentation(polymerComp, {
+        type:  repr,
+        color: color,
+      });
+    }
+
+    const waterComp = await plugin.builders.structure.tryCreateComponentStatic(structure, "water");
+    if (waterComp) {
+      await plugin.builders.structure.representation.addRepresentation(waterComp, {
+        type:       "ball-and-stick",
+        typeParams: { alpha: 0.4 },
+        color:      "element-symbol",
+      });
+    }
+    waterRefStr.current = waterComp?.ref ?? null;
+
+    const ligandComp = await plugin.builders.structure.tryCreateComponentStatic(structure, "ligand");
+    if (ligandComp) {
+      await plugin.builders.structure.representation.addRepresentation(ligandComp, {
+        type:        "ball-and-stick",
+        color:       "uniform",
+        colorParams: { value: Color(0xf59e0b) },
+      });
+    }
+    ligandRefStr.current = ligandComp?.ref ?? null;
+
+    const ionComp = await plugin.builders.structure.tryCreateComponentStatic(structure, "ion");
+    if (ionComp) {
+      await plugin.builders.structure.representation.addRepresentation(ionComp, {
+        type:  "ball-and-stick",
+        color: "element-symbol",
+      });
+    }
+
     // Re-apply selection after repr rebuild so marker persists across repr changes
     const sel = selectedResidueRef.current;
     if (sel) applyResidueSelection(plugin, sel);
