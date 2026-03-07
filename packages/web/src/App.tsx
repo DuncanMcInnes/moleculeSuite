@@ -3,13 +3,25 @@ import MolstarViewer from "./components/MolstarViewer";
 import PDBUpload from "./components/PDBUpload";
 import type { StructureMetadata } from "./types";
 
+type SelectedResidue = { chainId: string; seqId: number };
+
 export default function App() {
   const [structure, setStructure] = useState<StructureMetadata | null>(null);
   const [pdbFile, setPdbFile] = useState<File | null>(null);
+  const [selectedResidue, setSelectedResidue] = useState<SelectedResidue | null>(null);
 
   function handleUploadSuccess(metadata: StructureMetadata, file: File) {
+    setSelectedResidue(null);
     setStructure(metadata);
     setPdbFile(file);
+  }
+
+  function handleResidueClick(chainId: string, seqId: number) {
+    setSelectedResidue(prev =>
+      prev?.chainId === chainId && prev.seqId === seqId
+        ? null
+        : { chainId, seqId }
+    );
   }
 
   return (
