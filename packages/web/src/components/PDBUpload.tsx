@@ -1,4 +1,4 @@
-import { useRef, useState, DragEvent } from "react";
+import { useRef, useState, DragEvent, KeyboardEvent } from "react";
 import type { StructureMetadata } from "../types";
 
 interface Props {
@@ -11,6 +11,8 @@ export default function PDBUpload({ onUploadSuccess, structure }: Props) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
+  const [accession, setAccession] = useState('');
+  const [fetchLoading, setFetchLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   function acceptFile(f: File | undefined) {
@@ -20,7 +22,20 @@ export default function PDBUpload({ onUploadSuccess, structure }: Props) {
       return;
     }
     setError(null);
+    setAccession('');
     setFile(f);
+  }
+
+  function handleAccessionChange(value: string) {
+    setAccession(value);
+    if (value) {
+      setFile(null);
+      if (inputRef.current) inputRef.current.value = '';
+    }
+  }
+
+  async function handleFetch() {
+    // logic added in Step 2
   }
 
   function handleDrop(e: DragEvent<HTMLDivElement>) {
@@ -87,6 +102,31 @@ export default function PDBUpload({ onUploadSuccess, structure }: Props) {
       >
         {loading ? "Parsing…" : "Upload & Parse"}
       </button>
+
+      <div className="divider">
+        <span>or fetch by accession</span>
+      </div>
+
+      <div className="accession-row">
+        <input
+          className="accession-input"
+          type="text"
+          maxLength={4}
+          placeholder="e.g. 1HHO"
+          value={accession}
+          onChange={(e) => handleAccessionChange(e.target.value)}
+          onKeyDown={(e: KeyboardEvent<HTMLInputElement>) => {
+            if (e.key === 'Enter') handleFetch();
+          }}
+        />
+        <button
+          className="btn-primary accession-btn"
+          disabled={!accession || fetchLoading}
+          onClick={handleFetch}
+        >
+          {fetchLoading ? 'Fetching…' : 'Fetch'}
+        </button>
+      </div>
 
       {structure && (
         <div className="metadata-card">
