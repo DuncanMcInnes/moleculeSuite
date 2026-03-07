@@ -243,6 +243,24 @@ body {
   letter-spacing: 0.08em;
 }
 
+.sequence-aa {
+  cursor: pointer;
+  padding: 0 1px;
+  border-radius: 2px;
+  transition: background 0.1s, color 0.1s;
+}
+
+.sequence-aa:hover {
+  background: var(--accent-blue);
+  color: var(--bg);
+}
+
+.sequence-aa--selected {
+  background: var(--accent-blue);
+  color: var(--bg);
+  font-weight: 600;
+}
+
 /* ── Repr / colour controls ──────────────────────────────────────────── */
 .repr-controls {
   display: flex;
