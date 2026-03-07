@@ -4,16 +4,20 @@ import { renderReact18 } from "molstar/lib/mol-plugin-ui/react18";
 import { DefaultPluginUISpec } from "molstar/lib/mol-plugin-ui/spec";
 import type { PluginContext } from "molstar/lib/mol-plugin/context";
 import { Color } from "molstar/lib/mol-util/color/index";
+import { Script } from "molstar/lib/mol-script/script";
+import { StructureSelection, StructureElement } from "molstar/lib/mol-model/structure";
 import type { StructureMetadata } from "../types";
 
 import "molstar/build/viewer/molstar.css";
 
 type ReprType = "cartoon" | "ball-and-stick" | "gaussian-surface";
 type ColorTheme = "chain-id" | "element-symbol" | "uncertainty" | "sequence-id";
+type SelectedResidue = { chainId: string; seqId: number };
 
 interface Props {
   structure: StructureMetadata | null;
   pdbFile: File | null;
+  selectedResidue: SelectedResidue | null;
 }
 
 const REPR_OPTIONS: { value: ReprType; label: string }[] = [
@@ -29,7 +33,22 @@ const COLOR_OPTIONS: { value: ColorTheme; label: string }[] = [
   { value: "sequence-id",    label: "Rainbow" },
 ];
 
-export default function MolstarViewer({ pdbFile }: Props) {
+function applyResidueSelection(plugin: PluginContext, sel: SelectedResidue) {
+  const structure =
+    plugin.managers.structure.hierarchy.current.structures[0]?.cell.obj?.data;
+  if (!structure) return;
+  const selection = Script.getStructureSelection(Q => Q.struct.generator.atomGroups({
+    "chain-test":   Q.core.rel.eq([Q.struct.atomProperty.macromolecular.auth_asym_id(), sel.chainId]),
+    "residue-test": Q.core.rel.eq([Q.struct.atomProperty.macromolecular.auth_seq_id(),  sel.seqId]),
+    "group-by":     Q.struct.atomProperty.macromolecular.residueKey(),
+  }), structure);
+  const loci = StructureSelection.toLociWithSourceUnits(selection);
+  if (StructureElement.Loci.isEmpty(loci)) return;
+  plugin.managers.interactivity.lociSelects.selectOnly({ loci });
+  plugin.managers.camera.focusLoci(loci);
+}
+
+export default function MolstarViewer({ pdbFile, selectedResidue }: Props) {
   const containerRef = useRef<HTMLDivElement>(null);
   const pluginRef    = useRef<PluginContext | null>(null);
   const blobUrlRef   = useRef<string | null>(null);
@@ -40,6 +59,7 @@ export default function MolstarViewer({ pdbFile }: Props) {
   // Refs so loadStructure always reads the current values without stale closures
   const reprRef  = useRef(reprType);
   const colorRef = useRef(colorTheme);
+  const selectedResidueRef = useRef(selectedResidue);
 
   // Effect 1: init plugin once on mount, dispose on unmount.
   useEffect(() => {
@@ -102,6 +122,18 @@ export default function MolstarViewer({ pdbFile }: Props) {
     loadStructure(url, "cartoon", "chain-id");
   }, [pdbFile]);
 
+  // Effect 3: react to selectedResidue changes (select + focus, or deselect)
+  useEffect(() => {
+    selectedResidueRef.current = selectedResidue;
+    const plugin = pluginRef.current;
+    if (!plugin) return;
+    if (!selectedResidue) {
+      plugin.managers.interactivity.lociSelects.deselectAll();
+      return;
+    }
+    applyResidueSelection(plugin, selectedResidue);
+  }, [selectedResidue]);
+
   async function loadStructure(url: string, repr: ReprType, color: ColorTheme) {
     const plugin = pluginRef.current;
     if (!plugin) return;
@@ -117,6 +149,9 @@ export default function MolstarViewer({ pdbFile }: Props) {
       type:  repr,
       color: color,
     });
+    // Re-apply selection after repr rebuild so marker persists across repr changes
+    const sel = selectedResidueRef.current;
+    if (sel) applyResidueSelection(plugin, sel);
   }
 
   async function handleReprChange(repr: ReprType) {
