@@ -1,6 +1,7 @@
 export interface ChainInfo {
   id: string;
   sequence: string;
+  seq_ids: number[];
 }
 
 /** Mirrors the StructureMetadataResponse Pydantic model from the API. */
