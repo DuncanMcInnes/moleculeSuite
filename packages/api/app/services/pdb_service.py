@@ -15,6 +15,7 @@ from Bio.PDB import PDBParser, PPBuilder
 class ChainInfo:
     id: str
     sequence: str
+    seq_ids: list[int]
 
 
 @dataclass
@@ -47,13 +48,16 @@ def parse_pdb(filename: str, content: bytes) -> PDBMetadata:
     # PPBuilder concatenates peptide fragments within a chain into one sequence.
     builder = PPBuilder()
     sequence_by_chain: dict[str, str] = {}
+    seq_ids_by_chain: dict[str, list[int]] = {}
     for chain in structure.get_chains():
         peptides = builder.build_peptides(chain)
         seq = "".join(str(pp.get_sequence()) for pp in peptides)
         sequence_by_chain[chain.id] = seq
+        seq_ids_by_chain[chain.id] = [res.id[1] for pp in peptides for res in pp]
 
     chains = [
-        ChainInfo(id=cid, sequence=sequence_by_chain.get(cid, ""))
+        ChainInfo(id=cid, sequence=sequence_by_chain.get(cid, ""),
+                  seq_ids=seq_ids_by_chain.get(cid, []))
         for cid in sorted(sequence_by_chain)
     ]
 

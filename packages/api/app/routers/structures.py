@@ -9,6 +9,7 @@ router = APIRouter(prefix="/structures", tags=["structures"])
 class ChainInfoResponse(BaseModel):
     id: str
     sequence: str
+    seq_ids: list[int]
 
 
 class StructureMetadataResponse(BaseModel):
@@ -40,7 +41,7 @@ async def upload_structure(file: UploadFile = File(...)) -> StructureMetadataRes
 
     return StructureMetadataResponse(
         name=metadata.name,
-        chains=[ChainInfoResponse(id=c.id, sequence=c.sequence) for c in metadata.chains],
+        chains=[ChainInfoResponse(id=c.id, sequence=c.sequence, seq_ids=c.seq_ids) for c in metadata.chains],
         residue_count=metadata.residue_count,
         atom_count=metadata.atom_count,
     )
