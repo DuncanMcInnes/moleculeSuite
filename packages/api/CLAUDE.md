@@ -1,6 +1,6 @@
 # moleculeSuite
 
-_Last updated: 2026-03-05_
+_Last updated: 2026-03-28_
 A protein biochemistry visualisation and analysis suite.
 Local-first, containerised, designed to scale to cloud over time.
 
@@ -44,11 +44,16 @@ data/structures/       # Local PDB file storage (mounted as Docker volume)
 - API docs: http://localhost:8000/docs
 
 ## Current Phase
-- Phase 5 complete. Phase 6 not yet planned.
-- Phase 5 — RCSB fetch by accession code
-- Phase 4 — HETATM controls: hide/show waters, highlight ligands
-- Phase 3 complete.
-- Phase 2 complete. 
+- Phase 6a complete. Phase 6b (job UI frontend) not yet planned.
+- Phase 6a — Job backend infrastructure
+  - SQLite-backed job table (WAL mode), LocalRunner (ThreadPoolExecutor)
+  - Job service: create/get/list/update with KNOWN_MODULES validation
+  - REST endpoints: POST /api/jobs, GET /api/jobs, GET /api/jobs/{id}, DELETE /api/jobs/{id}
+  - Stub worker exercises full pending→running→complete lifecycle (sleep 5s, writes stub_output.json)
+- Phase 5 complete — RCSB fetch by accession code
+- Phase 4 complete — HETATM controls: hide/show waters, highlight ligands
+- Phase 3 complete
+- Phase 2 complete
 - PDB file upload via frontend
 - BioPython parses and returns metadata
 - Mol* renders the structure
@@ -67,6 +72,7 @@ data/structures/       # Local PDB file storage (mounted as Docker volume)
 
 ## Plans & Decisions
 - docs/plans/ — phase plans and architectural decisions
+- Completed: docs/plans/phase-6a-job-backend.md
 - Completed: docs/plans/phase-5-rcsb-fetch.md
 - Completed: docs/plans/phase-4-hetatm-controls.md
 - Completed: docs/plans/phase-1-pdb-upload-molstar.md
