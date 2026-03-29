@@ -1,4 +1,5 @@
 import json
+import os
 from dataclasses import asdict
 
 from fastapi import APIRouter, Depends, HTTPException, Query
@@ -8,7 +9,7 @@ from app.db.models import JobStatus
 from app.runners.base import JobRunner
 from app.services import job_service
 
-router = APIRouter(prefix="/api/jobs", tags=["jobs"])
+router = APIRouter(prefix="/jobs", tags=["jobs"])
 
 # --- dependency ---
 
@@ -77,3 +78,15 @@ async def cancel_job(job_id: str, runner: JobRunner = Depends(get_runner)):
     else:
         note = "Job is already running. Cancellation requested but thread cannot be stopped."
     return {"data": {"cancelled": cancelled, "note": note}, "error": None, "metadata": {}}
+
+
+@router.get("/{job_id}/outputs")
+async def list_outputs(job_id: str):
+    job = job_service.get_job(job_id)
+    if job is None:
+        raise HTTPException(status_code=404, detail="Job not found")
+    output_dir = job.output_dir or ""
+    if not os.path.isdir(output_dir):
+        return {"data": [], "error": None, "metadata": {}}
+    files = sorted(os.listdir(output_dir))
+    return {"data": files, "error": None, "metadata": {"count": len(files)}}
