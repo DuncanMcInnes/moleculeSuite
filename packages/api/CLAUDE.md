@@ -1,6 +1,6 @@
 # moleculeSuite
 
-_Last updated: 2026-03-28_
+_Last updated: 2026-03-29_
 A protein biochemistry visualisation and analysis suite.
 Local-first, containerised, designed to scale to cloud over time.
 
@@ -44,8 +44,12 @@ data/structures/       # Local PDB file storage (mounted as Docker volume)
 - API docs: http://localhost:8000/docs
 
 ## Current Phase
-- Phase 6a complete. Phase 6b (job UI frontend) not yet planned.
-- Phase 6a — Job backend infrastructure
+- Phase 6b complete. Phase 6c (first real pipeline module) not yet planned.
+- Phase 6b — Job UI frontend
+  - JobsPanel component: job list, submit form, live polling (3s), status badges, detail view
+  - Output file listing via GET /api/jobs/{id}/outputs (added to backend)
+  - Structure/Jobs tab toggle in App.tsx; Mol* instance preserved across tab switches
+- Phase 6a complete — Job backend infrastructure
   - SQLite-backed job table (WAL mode), LocalRunner (ThreadPoolExecutor)
   - Job service: create/get/list/update with KNOWN_MODULES validation
   - REST endpoints: POST /api/jobs, GET /api/jobs, GET /api/jobs/{id}, DELETE /api/jobs/{id}
@@ -72,6 +76,7 @@ data/structures/       # Local PDB file storage (mounted as Docker volume)
 
 ## Plans & Decisions
 - docs/plans/ — phase plans and architectural decisions
+- Completed: docs/plans/phase-6b-job-ui.md
 - Completed: docs/plans/phase-6a-job-backend.md
 - Completed: docs/plans/phase-5-rcsb-fetch.md
 - Completed: docs/plans/phase-4-hetatm-controls.md
